@@ -220,6 +220,7 @@ SM_STATE stateIdle(void)
 	encState = getEncoderTurn();
 	
 	if ( (swDebouncedState & BTN_OE) && (tmp & BTN_OE) ) {
+		psuOutEnabled ^= 1;
 		return STATE_OE;
 	} else if ( (swDebouncedState & BTN_MODE) && (tmp & BTN_MODE)) {
 		return STATE_MODE;
@@ -231,7 +232,7 @@ SM_STATE stateIdle(void)
 		return STATE_ENCINC;
 	} else if ( encState == -1 ) {
 		return STATE_ENCDEC;
-	} else if (adcResampleTimeout >= 244) {
+	} else if (adcResampleTimeout >= 122) {
 		adcResampleTimeout = 0;
 		return STATE_LCDUPDATE;
 	} else {
@@ -288,7 +289,7 @@ SM_STATE stateEncInc(void)
 		break;
 						
 	case 10:
-		if (currentSet < 2999) currentSet += 1;
+		if (currentSet < 3000) currentSet += 1;
 		break;
 	}
 				
@@ -356,7 +357,7 @@ SM_STATE stateEncDec(void)
 SM_STATE stateOE(void)
 {
 	// toggle output enable status bit
-	psuOutEnabled ^= 1; 
+	//psuOutEnabled ^= 1; 
 					
 	// enable output	
 	if (psuOutEnabled == 1){
@@ -380,6 +381,7 @@ SM_STATE stateMode(void)
 {
 	// toggle internal output mode flag and disable output
 	psuOutMode ^= 1;
+	psuOutEnabled = 0;
 	return STATE_OE;
 }
 
